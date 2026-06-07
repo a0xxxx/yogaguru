@@ -109,7 +109,7 @@
         const data = await res.json();
         const answer = data.answer || 'エラーが発生しました。';
         const linkedAnswer = answer.replace(
-          /(https?:\/\/[^\s）」\)]+)/g,
+          /(https?:\/\/[^\s）」\)（]+)/g,
           '<a href="$1" target="_blank">$1</a>'
         );
         resultDiv.innerHTML = linkedAnswer;
