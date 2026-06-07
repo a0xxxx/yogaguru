@@ -62,6 +62,13 @@
       color: #333;
       white-space: pre-wrap;
     }
+    .result-wrap a {
+      color: #5bc8c0;
+      text-decoration: none;
+    }
+    .result-wrap a:hover {
+      text-decoration: underline;
+    }
     .loading { color: #888; text-align: center; padding: 20px; }
     .footer {
       text-align: center;
@@ -100,7 +107,12 @@
           body: JSON.stringify({ query })
         });
         const data = await res.json();
-        resultDiv.innerText = data.answer || 'エラーが発生しました。';
+        const answer = data.answer || 'エラーが発生しました。';
+        const linkedAnswer = answer.replace(
+          /(https?:\/\/[^\s）」\)]+)/g,
+          '<a href="$1" target="_blank">$1</a>'
+        );
+        resultDiv.innerHTML = linkedAnswer;
       } catch (e) {
         resultDiv.innerText = 'エラーが発生しました。';
       }
