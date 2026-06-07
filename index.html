@@ -10,6 +10,7 @@
       font-family: 'Helvetica Neue', sans-serif;
       background: #fff;
       color: #333;
+      min-height: 100vh;
     }
     .header {
       text-align: center;
@@ -20,36 +21,55 @@
       font-weight: bold;
       margin-bottom: 12px;
     }
-    .header h1 span {
-      color: #5bc8c0;
-    }
+    .header h1 span { color: #5bc8c0; }
     .header p {
       font-size: 16px;
       color: #888;
       margin-bottom: 40px;
     }
-    .chat-wrap {
-      max-width: 800px;
+    .search-wrap {
+      max-width: 700px;
       margin: 0 auto;
-      padding: 0 20px 60px;
+      padding: 0 20px;
+      display: flex;
+      gap: 10px;
     }
-    iframe {
-      width: 100%;
-      height: 600px;
+    .search-wrap input {
+      flex: 1;
+      padding: 16px 24px;
+      font-size: 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 50px;
+      outline: none;
+    }
+    .search-wrap input:focus { border-color: #5bc8c0; }
+    .search-wrap button {
+      padding: 16px 28px;
+      background: #5bc8c0;
+      color: #fff;
       border: none;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      border-radius: 50px;
+      font-size: 16px;
+      cursor: pointer;
     }
+    .search-wrap button:hover { background: #4ab0a8; }
+    .result-wrap {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px 60px;
+      line-height: 1.8;
+      font-size: 15px;
+      color: #333;
+      white-space: pre-wrap;
+    }
+    .loading { color: #888; text-align: center; padding: 20px; }
     .footer {
       text-align: center;
       padding: 20px;
       font-size: 12px;
       color: #aaa;
     }
-    .footer a {
-      color: #5bc8c0;
-      text-decoration: none;
-    }
+    .footer a { color: #5bc8c0; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -57,14 +77,38 @@
     <h1>🧘 <span>ヨガ</span>グル</h1>
     <p>350記事のデータベースから、AIヨガ先生が答えます</p>
   </div>
-  <div class="chat-wrap">
-    <iframe
-      src="https://udify.app/chatbot/9SMzmfv8gWnV9e7V"
-      allow="microphone *">
-    </iframe>
+  <div class="search-wrap">
+    <input type="text" id="query" placeholder="ヨガについて質問してください..." />
+    <button onclick="askYogaguru()">質問する</button>
   </div>
+  <div class="result-wrap" id="result"></div>
   <div class="footer">
     <a href="https://yogaholic.jp" target="_blank">yogaholic.jp</a> が提供するAIサービスです
   </div>
+
+  <script>
+    async function askYogaguru() {
+      const query = document.getElementById('query').value;
+      if (!query) return;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<div class="loading">考え中...</div>';
+
+      try {
+        const res = await fetch('/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query })
+        });
+        const data = await res.json();
+        resultDiv.innerText = data.answer || 'エラーが発生しました。';
+      } catch (e) {
+        resultDiv.innerText = 'エラーが発生しました。';
+      }
+    }
+
+    document.getElementById('query').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') askYogaguru();
+    });
+  </script>
 </body>
 </html>
