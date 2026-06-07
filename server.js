@@ -1,6 +1,5 @@
 const express = require('express');
 const fetch = require('node-fetch');
-const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -25,10 +24,14 @@ app.post('/api/ask', async (req, res) => {
       })
     });
     
-    const data = await response.json();
+    const text = await response.text();
+    console.log('Dify response:', text);
+    
+    const data = JSON.parse(text);
     res.json({ answer: data.answer });
   } catch (error) {
-    res.status(500).json({ error: 'エラーが発生しました' });
+    console.error('Error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
